@@ -1,0 +1,77 @@
+config:
+  target: "https://angal-aziz-sotware-21-documentation-system-production.up.railway.app"
+  phases:
+    # Ramp up from 0 to 100 users over 10 seconds
+    - duration: 10
+      arrivalRate: 10
+      name: "Ramp up to 100 users"
+    # Sustain 100 concurrent users for 60 seconds
+    - duration: 60
+      arrivalRate: 10
+      name: "Sustained load - 100 users"
+  http:
+    timeout: 30
+  processor: "./load-test-functions.js"
+
+scenarios:
+  # Scenario 1: Boss Login and Dashboard Access
+  - name: "Boss Login Flow"
+    weight: 40
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "ahmedfathy12309@gmail.com"
+            password: "ahmedfathy12345678"
+          capture:
+            - json: "$.accessToken"
+              as: "authToken"
+          expect:
+            - statusCode: 200
+
+      - get:
+          url: "/api/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  # Scenario 2: File Operations
+  - name: "File Operations Flow"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "ahmedfathy12309@gmail.com"
+            password: "ahmedfathy12345678"
+          capture:
+            - json: "$.accessToken"
+              as: "authToken"
+
+      - get:
+          url: "/api/files"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+      - post:
+          url: "/api/files"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            title: "Load Test File {{ $randomString() }}"
+            content: "This is a test file created during load testing"
+            category: "General"
+          expect:
+            - statusCode: 201
+
+  # Scenario 3: Simple Health Check
+  - name: "Health Check"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: [200, 404]
