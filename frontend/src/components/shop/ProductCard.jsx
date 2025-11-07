@@ -1,14 +1,17 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, ShoppingCart } from 'lucide-react';
+import { Heart, ShoppingCart, Eye } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { formatPrice } from '../../utils/helpers';
+import { useState } from 'react';
 import Badge from '../ui/Badge';
+import QuickView from '../ui/QuickView';
 
 const ProductCard = ({ product, index = 0 }) => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -20,6 +23,12 @@ const ProductCard = ({ product, index = 0 }) => {
     e.preventDefault();
     e.stopPropagation();
     toggleWishlist(product);
+  };
+
+  const handleQuickView = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsQuickViewOpen(true);
   };
 
   return (
@@ -37,6 +46,7 @@ const ProductCard = ({ product, index = 0 }) => {
           <img
             src={product.images[0]}
             alt={product.name}
+            loading="lazy"
             className="w-full h-full object-cover transition-transform duration-600 group-hover:scale-110"
           />
 
@@ -45,6 +55,7 @@ const ProductCard = ({ product, index = 0 }) => {
             <img
               src={product.images[1]}
               alt={product.name}
+              loading="lazy"
               className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
             />
           )}
@@ -61,6 +72,17 @@ const ProductCard = ({ product, index = 0 }) => {
 
           {/* Quick Actions */}
           <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            {/* Quick View */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={handleQuickView}
+              className="p-2 bg-white/90 text-black rounded-full hover:bg-white backdrop-blur-sm transition-colors"
+              aria-label="Quick view"
+            >
+              <Eye className="w-5 h-5" />
+            </motion.button>
+
             {/* Wishlist */}
             <motion.button
               whileHover={{ scale: 1.1 }}
@@ -102,7 +124,9 @@ const ProductCard = ({ product, index = 0 }) => {
         <div className="space-y-2">
           {/* Category */}
           <p className="text-xs text-gray-500 uppercase tracking-wider">
-            {product.category}
+            {typeof product.category === 'string'
+              ? product.category
+              : product.category?.name || product.category?.slug || 'Category'}
           </p>
 
           {/* Name */}
@@ -148,6 +172,13 @@ const ProductCard = ({ product, index = 0 }) => {
           )}
         </div>
       </Link>
+
+      {/* Quick View Modal */}
+      <QuickView 
+        product={product}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+      />
     </motion.div>
   );
 };

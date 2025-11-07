@@ -1,41 +1,57 @@
 import User from '../models/User.js';
 import connectDB from '../config/db.js';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
-const createSuperAdmin = async () => {
+const createAdmin = async () => {
   try {
     await connectDB();
+    console.log('🔌 Connected to MongoDB');
 
-    // Check if super admin already exists
-    const existingAdmin = await User.findOne({ email: process.env.ADMIN_EMAIL });
+    const adminEmail = 'youssefezzat764@gmail.com';
+    const adminPassword = '123456789';
+
+    // Check if admin already exists
+    let admin = await User.findOne({ email: adminEmail });
     
-    if (existingAdmin) {
-      console.log('✅ Super admin already exists');
-      process.exit(0);
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    
+    if (admin) {
+      // Update existing user to admin with new password
+      admin.role = 'admin';
+      admin.password = hashedPassword;
+      admin.isEmailVerified = true;
+      admin.isActive = true;
+      await admin.save();
+      console.log('✅ Updated existing user to ADMIN role with new password');
+    } else {
+      // Create new admin user
+      admin = await User.create({
+        name: 'Youssef (Admin)',
+        email: adminEmail,
+        password: hashedPassword,
+        role: 'admin',
+        isEmailVerified: true,
+        isActive: true,
+        phone: '+201234567890',
+      });
+      console.log('✅ Created new ADMIN user');
     }
 
-    // Create super admin
-    const superAdmin = await User.create({
-      name: process.env.ADMIN_NAME || 'Youssef',
-      email: process.env.ADMIN_EMAIL,
-      password: process.env.ADMIN_PASSWORD,
-      role: 'super_admin',
-      phone: '+201234567890',
-      address: 'Cairo, Egypt',
-      isActive: true
-    });
-
-    console.log('✅ Super admin created successfully');
-    console.log('Email:', superAdmin.email);
-    console.log('Role:', superAdmin.role);
+    console.log('\n📧 Admin Credentials:');
+    console.log('   Email:', adminEmail);
+    console.log('   Password:', adminPassword);
+    console.log('   Role:', admin.role);
+    console.log('\n✨ Admin account is ready! You can now login.\n');
 
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error creating super admin:', error);
+    console.error('❌ Error creating admin:', error);
     process.exit(1);
   }
 };
 
-createSuperAdmin();
+createAdmin();

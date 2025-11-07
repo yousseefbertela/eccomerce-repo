@@ -6,7 +6,7 @@ import {
   updateOrderStatus,
   cancelOrder,
   getAllOrders
-} from '../controllers/orderController.js';
+} from '../controller/orderController.js';
 import { protect } from '../middleware/auth.js';
 import { adminOnly } from '../middleware/adminAuth.js';
 

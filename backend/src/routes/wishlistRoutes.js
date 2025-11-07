@@ -4,8 +4,9 @@ import {
   addToWishlist,
   removeFromWishlist,
   clearWishlist,
-  checkWishlist
-} from '../controllers/wishlistController.js';
+  checkWishlist,
+  toggleWishlist
+} from '../controller/wishlistController.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -14,6 +15,7 @@ const router = express.Router();
 router.use(protect);
 
 router.get('/', getWishlist);
+router.post('/toggle', toggleWishlist);
 router.get('/check/:productId', checkWishlist);
 router.post('/:productId', addToWishlist);
 router.delete('/:productId', removeFromWishlist);

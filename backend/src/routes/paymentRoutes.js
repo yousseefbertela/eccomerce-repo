@@ -3,7 +3,7 @@ import {
   getPaymentByOrder,
   getAllPayments,
   updatePaymentStatus
-} from '../controllers/paymentController.js';
+} from '../controller/paymentController.js';
 import { protect } from '../middleware/auth.js';
 import { adminOnly } from '../middleware/adminAuth.js';
 

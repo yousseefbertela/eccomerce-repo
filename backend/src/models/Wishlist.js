@@ -2,21 +2,24 @@ import mongoose from 'mongoose';
 
 const wishlistSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+    email: {
+      type: String,
       required: true,
-      unique: true
+      unique: true,
+      lowercase: true
     },
+    // Store product names for human-readable wishlist items
     products: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product'
+      type: String,
+      required: true
     }]
   },
   {
     timestamps: true
   }
 );
+
+// We rely on controller logic to prevent duplicates in the products array
 
 const Wishlist = mongoose.model('Wishlist', wishlistSchema);
 

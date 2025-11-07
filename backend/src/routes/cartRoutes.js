@@ -5,7 +5,7 @@ import {
   updateCartItem,
   removeFromCart,
   clearCart
-} from '../controllers/cartController.js';
+} from '../controller/cartController.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -15,8 +15,9 @@ router.use(protect);
 
 router.get('/', getCart);
 router.post('/items', addToCart);
-router.put('/items/:productId', updateCartItem);
-router.delete('/items/:productId', removeFromCart);
+// Use itemId to reference the cart item's _id (not the product id)
+router.put('/items/:itemId', updateCartItem);
+router.delete('/items/:itemId', removeFromCart);
 router.delete('/', clearCart);
 
 export default router;

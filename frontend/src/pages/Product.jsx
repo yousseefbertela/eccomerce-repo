@@ -10,6 +10,7 @@ import Button from '../components/ui/Button';
 import ProductCard from '../components/shop/ProductCard';
 import ProductReviews from '../components/product/ProductReviews';
 import SizeGuide from '../components/product/SizeGuide';
+import SEO from '../components/ui/SEO';
 
 const Product = () => {
 	const { slug } = useParams();
@@ -60,7 +61,15 @@ const Product = () => {
 	const decrement = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 
 	return (
-		<section className="section-padding">
+		<>
+			<SEO 
+				title={`${product.name} | ANGAL`}
+				description={product.description}
+				keywords={`${product.category}, ${product.name}, fashion, streetwear, ${product.sizes?.join(', ')}`}
+				canonicalUrl={`/product/${product.slug}`}
+				image={product.images?.[0]}
+			/>
+			<section className="section-padding">
 			<div className="container-custom">
 				{/* Breadcrumbs */}
 				<nav className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-6">
@@ -250,7 +259,7 @@ const Product = () => {
 				</div>
 
 				{/* Customer Reviews */}
-				<ProductReviews productName={product.name} />
+				<ProductReviews productId={product._id} productName={product.name} />
 
 				{/* Related products */}
 				{related.length > 0 && (
@@ -267,7 +276,8 @@ const Product = () => {
 
 			{/* Size Guide Modal */}
 			<SizeGuide isOpen={isSizeGuideOpen} onClose={() => setIsSizeGuideOpen(false)} />
-		</section>
+			</section>
+		</>
 	);
 };
 

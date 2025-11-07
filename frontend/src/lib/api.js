@@ -28,17 +28,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error.response?.data?.message || 'An error occurred';
-    
     // Handle specific error codes
     if (error.response?.status === 401) {
       // Unauthorized - clear auth data
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      toast.error('Session expired. Please login again.');
       window.location.href = '/login';
     }
     
-    toast.error(message);
+    // Let individual contexts/components handle their own error toasts
+    // This prevents duplicate error messages
     return Promise.reject(error);
   }
 );
@@ -48,9 +48,11 @@ export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   register: (userData) => api.post('/auth/register', userData),
   logout: () => api.post('/auth/logout'),
-  getCurrentUser: () => api.get('/auth/me'),
-  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
-  resetPassword: (token, password) => api.post(`/auth/reset-password/${token}`, { password }),
+  getCurrentUser: () => api.get('/auth/profile'),
+  verifyEmail: (email, code) => api.post('/auth/verify-email', { email, code }), // Changed to POST with email and code
+  forgotPassword: (data) => api.post('/auth/forgot-password', data),
+  resetPassword: (data) => api.post('/auth/reset-password', data), // Now accepts object with token and newPassword
+  resendVerification: (data) => api.post('/auth/resend-verification', data),
 };
 
 // Products API
@@ -76,9 +78,9 @@ export const categoriesAPI = {
 export const cartAPI = {
   get: () => api.get('/cart'),
   add: (productId, quantity, size, color) => 
-    api.post('/cart/add', { productId, quantity, size, color }),
-  update: (itemId, quantity) => api.put(`/cart/${itemId}`, { quantity }),
-  remove: (itemId) => api.delete(`/cart/${itemId}`),
+    api.post('/cart/items', { productId, quantity, size, color }),
+  update: (productId, quantity) => api.put(`/cart/items/${productId}`, { quantity }),
+  remove: (productId) => api.delete(`/cart/items/${productId}`),
   clear: () => api.delete('/cart'),
 };
 

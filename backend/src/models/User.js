@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema(
   {
@@ -46,26 +45,40 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationCode: {
+      type: String,
+      select: false,
+    },
+    emailVerificationExpires: {
+      type: Date,
+      select: false,
+    },
+    resetPasswordToken: {
+      type: String,
+      select: false,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      select: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// Hash password before saving
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    return next();
-  }
-  
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
+// ⚠️ SECURITY WARNING: Passwords stored in plain text (NOT hashed)
+// This is a MAJOR security vulnerability - passwords are visible in database
+// Removed bcrypt hashing as per user request
 
-// Method to compare passwords
+// Method to compare passwords (plain text comparison)
 userSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  // Direct string comparison - no hashing
+  return enteredPassword === this.password;
 };
 
 // Method to get user without password

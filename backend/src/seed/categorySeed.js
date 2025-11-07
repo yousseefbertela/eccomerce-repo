@@ -6,6 +6,12 @@ dotenv.config();
 
 const categories = [
   {
+    name: 'New Arrivals',
+    slug: 'new-arrivals',
+    description: 'Latest drops and recently added products',
+    image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400'
+  },
+  {
     name: 'Men\'s Collection',
     slug: 'mens-collection',
     description: 'Premium men\'s clothing and streetwear essentials',

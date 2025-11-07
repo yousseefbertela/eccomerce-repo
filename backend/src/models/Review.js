@@ -2,9 +2,13 @@ import mongoose from 'mongoose';
 
 const reviewSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+    email: {
+      type: String,
+      required: true,
+      lowercase: true
+    },
+    userName: {
+      type: String,
       required: true
     },
     product: {
@@ -42,7 +46,7 @@ const reviewSchema = new mongoose.Schema(
 );
 
 // One review per user per product
-reviewSchema.index({ user: 1, product: 1 }, { unique: true });
+reviewSchema.index({ email: 1, product: 1 }, { unique: true });
 
 const Review = mongoose.model('Review', reviewSchema);
 

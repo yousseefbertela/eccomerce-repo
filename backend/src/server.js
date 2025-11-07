@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import connectDB from './config/db.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
@@ -16,8 +18,16 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
-// Load environment variables
-dotenv.config();
+// Get directory name in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load environment variables from backend/.env
+const envPath = join(__dirname, '../.env');
+console.log('🔍 Looking for .env at:', envPath);
+dotenv.config({ path: envPath });
+console.log('📧 GMAIL_USER after dotenv:', process.env.GMAIL_USER ? 'Found' : 'Not found');
+console.log('📧 GMAIL_APP_PASSWORD after dotenv:', process.env.GMAIL_APP_PASSWORD ? 'Found' : 'Not found');
 
 // Initialize Express app
 const app = express();

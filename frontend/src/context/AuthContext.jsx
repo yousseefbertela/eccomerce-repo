@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { authAPI } from '../lib/api';
 import { storage } from '../utils/helpers';
-import { API_BASE_URL } from '../utils/constants';
+import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
 
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
     if (savedToken && savedUser) {
       setToken(savedToken);
       setUser(savedUser);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
     }
     
     setLoading(false);
@@ -35,51 +34,61 @@ export const AuthProvider = ({ children }) => {
   // Login
   const login = async (email, password) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-        email,
-        password,
-      });
+      setLoading(true);
+      const response = await authAPI.login({ email, password });
 
-      const { token, user } = response.data;
+      const { token: authToken, user: userData } = response.data;
 
-      setToken(token);
-      setUser(user);
+      setToken(authToken);
+      setUser(userData);
       
-      storage.set('token', token);
-      storage.set('user', user);
-      
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      storage.set('token', authToken);
+      storage.set('user', userData);
 
-      return { success: true, user };
+      toast.success(`Welcome back, ${userData.name}!`);
+      return { success: true, user: userData };
     } catch (error) {
+      const message = error.response?.data?.message || 'Login failed';
+      const requiresVerification = error.response?.data?.requiresVerification || false;
+      
+      toast.error(message);
       return {
         success: false,
-        error: error.response?.data?.message || 'Login failed',
+        error: message,
+        requiresVerification,
       };
+    } finally {
+      setLoading(false);
     }
   };
 
   // Register
   const register = async (userData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, userData);
-
-      const { token, user } = response.data;
-
-      setToken(token);
-      setUser(user);
+      setLoading(true);
+      const response = await authAPI.register(userData);
       
-      storage.set('token', token);
-      storage.set('user', user);
-      
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      console.log('Registration response:', response.data);
 
-      return { success: true, user };
+      // Registration returns requiresVerification, not a token
+      // User must verify email before logging in
+      toast.success(response.data.message || 'Registration successful! Check your email.');
+      return { 
+        success: true, 
+        requiresVerification: response.data.requiresVerification,
+        user: response.data.user 
+      };
     } catch (error) {
+      console.error('Registration error:', error);
+      console.error('Error response:', error.response?.data);
+      const message = error.response?.data?.message || 'Registration failed';
+      toast.error(message);
       return {
         success: false,
-        error: error.response?.data?.message || 'Registration failed',
+        error: message,
       };
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,7 +98,9 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     storage.remove('token');
     storage.remove('user');
-    delete axios.defaults.headers.common['Authorization'];
+    storage.remove('cart');
+    storage.remove('wishlist');
+    toast.success('Logged out successfully');
   };
 
   // Update user

@@ -5,7 +5,7 @@ import {
   getMyReviews,
   updateReview,
   deleteReview
-} from '../controllers/reviewController.js';
+} from '../controller/reviewController.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();

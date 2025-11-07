@@ -10,10 +10,11 @@
     "seed:admin": "node src/seed/adminSeed.js",
     "seed:categories": "node src/seed/categorySeed.js",
     "seed:products": "node src/seed/productSeed.js",
+    "seed:mock": "node src/seed/importFrontendMock.js",
     "seed:all": "npm run seed:admin && npm run seed:categories && npm run seed:products"
   },
   "dependencies": {
-    "@emailjs/nodejs": "^4.0.6",
+    "@emailjs/nodejs": "^4.1.0",
     "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.9",
     "bcryptjs": "^2.4.3",
@@ -23,7 +24,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.3",
     "multer": "^1.4.5-lts.1",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "nodemailer": "^7.0.10"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

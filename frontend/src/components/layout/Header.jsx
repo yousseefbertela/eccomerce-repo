@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, User, Search, Menu, Heart, X } from 'lucide-react';
+import { ShoppingCart, User, Search, Menu, Heart, X, Shield } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useWishlist } from '../../context/WishlistContext';
 import MegaMenu from './MegaMenu';
 import MobileMenu from './MobileMenu';
 import SearchModal from './SearchModal';
+import CurrencySelector from '../ui/CurrencySelector';
 import { NAVIGATION_MENU } from '../../utils/constants';
 
 const Header = () => {
@@ -16,7 +17,7 @@ const Header = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   
   const { cartItemsCount, toggleCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { wishlistCount } = useWishlist();
   const location = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -198,6 +199,24 @@ const Header = () => {
               >
                 <Search className="w-5 h-5" />
               </button>
+              
+              {/* Currency Selector */}
+              <CurrencySelector />
+              
+              {/* Admin Panel Button - Only for admin users */}
+              {isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin') && (
+                <Link 
+                  to="/admin/dashboard" 
+                  className="p-2 hover:bg-neutral transition-colors rounded relative group" 
+                  aria-label="Admin Panel"
+                  title="Admin Panel"
+                >
+                  <Shield className="w-5 h-5 text-primary-600" />
+                  <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Admin Panel
+                  </span>
+                </Link>
+              )}
               
               <Link to="/wishlist" className="p-2 hover:bg-neutral transition-colors rounded" aria-label="Wishlist">
                 <Heart className="w-5 h-5" />

@@ -6,6 +6,26 @@ const cartItemSchema = new mongoose.Schema({
     ref: 'Product',
     required: true
   },
+  // Snapshots for string-based identification/display
+  productName: {
+    type: String,
+    default: null
+  },
+  productSlug: {
+    type: String,
+    default: null
+  },
+  // Optional variant selections
+  size: {
+    type: String,
+    required: false,
+    default: null
+  },
+  color: {
+    type: String,
+    required: false,
+    default: null
+  },
   quantity: {
     type: Number,
     required: true,
@@ -20,11 +40,11 @@ const cartItemSchema = new mongoose.Schema({
 
 const cartSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+    email: {
+      type: String,
       required: true,
-      unique: true
+      unique: true,
+      lowercase: true
     },
     items: [cartItemSchema],
     totalPrice: {

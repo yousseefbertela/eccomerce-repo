@@ -6,8 +6,10 @@ import {
   updateProduct,
   deleteProduct,
   getFeaturedProducts,
-  getRelatedProducts
-} from '../controllers/productController.js';
+  getRelatedProducts,
+  getProductBySlug,
+  getProductsByCategorySlug
+} from '../controller/productController.js';
 import { protect } from '../middleware/auth.js';
 import { adminOnly } from '../middleware/adminAuth.js';
 
@@ -16,6 +18,8 @@ const router = express.Router();
 // Public routes
 router.get('/', getProducts);
 router.get('/featured', getFeaturedProducts);
+router.get('/slug/:slug', getProductBySlug);
+router.get('/category/:slug', getProductsByCategorySlug);
 router.get('/:id', getProductById);
 router.get('/:id/related', getRelatedProducts);
 
