@@ -23,10 +23,29 @@ export default defineConfig({
   },
   // Ensure proper handling of routes in production build
   build: {
+    // Enable minification
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.logs in production
+        drop_debugger: true
+      }
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        // Code splitting for better caching
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['framer-motion', 'lucide-react', 'clsx'],
+          'utils': ['axios']
+        }
       }
-    }
+    },
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+    // Source maps only for production debugging
+    sourcemap: false,
   }
 })
