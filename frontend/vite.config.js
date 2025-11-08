@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    host: true, // Listen on all network interfaces
     // Enable history API fallback for client-side routing
     historyApiFallback: true,
     proxy: {
@@ -13,6 +14,10 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  preview: {
+    port: 5173,
+    host: true, // Listen on all network interfaces for Railway
   },
   // Ensure proper handling of routes in production build
   build: {
