@@ -18,6 +18,8 @@ export default defineConfig({
   preview: {
     port: 5173,
     host: true, // Listen on all network interfaces for Railway
+    strictPort: true,
+    allowedHosts: ['.railway.app', '.up.railway.app'],
   },
   // Ensure proper handling of routes in production build
   build: {
