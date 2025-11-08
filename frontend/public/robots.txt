@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://eccomerce-repo-production-a416.up.railway.app/sitemap.xml
+
+# Disallow admin and account pages from indexing
+Disallow: /admin/
+Disallow: /account/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /login
+Disallow: /register
+
+# Crawl delay
+Crawl-delay: 1
